@@ -22,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -38,15 +39,23 @@ class ManagerServiceTest {
     @InjectMocks
     private ManagerService managerService;
 
+
     @Test
-    public void manager_목록_조회_시_Todo가_없다면_NPE_에러를_던진다() {
+    public void manager_목록_조회_시_Todo가_없다면_InvalidRequestException을_던진다() {
         // given
         long todoId = 1L;
         given(todoRepository.findById(todoId)).willReturn(Optional.empty());
 
+        // AssertJ의 assertThatThrownBy를 사용한 이유:
+        // - 예외 발생 + 타입 + 메시지 검증을 체이닝으로 한 번에 표현할 수 있어 가독성이 좋다.
+        // - JUnit의 assertThrows는 예외 메시지까지 확인하려면 예외를 변수로 받은 뒤 추가 검증 코드가 필요해
+        // 테스트 의도가 한 눈에 덜 들어올 수 있다.
+
         // when & then
-        InvalidRequestException exception = assertThrows(InvalidRequestException.class, () -> managerService.getManagers(todoId));
-        assertEquals("Manager not found", exception.getMessage());
+        assertThatThrownBy(() -> managerService.getManagers(todoId))
+                .isInstanceOf(InvalidRequestException.class)
+                .hasMessage("Todo not found");
+
     }
 
     @Test
