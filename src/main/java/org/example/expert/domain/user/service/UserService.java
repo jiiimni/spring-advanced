@@ -38,3 +38,4 @@ public class UserService {
 
         user.changePassword(passwordEncoder.encode(userChangePasswordRequest.getNewPassword()));
     }
+}
