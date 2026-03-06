@@ -10,13 +10,13 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class FilterConfig {
 
-    private final JwtUtil jwtUtil;
+    private final JwtAuthHelper jwtAuthHelper;
     private final ObjectMapper objectMapper;
 
     @Bean
     public FilterRegistrationBean<JwtFilter> jwtFilter() {
         FilterRegistrationBean<JwtFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new JwtFilter(jwtUtil, objectMapper));
+        registrationBean.setFilter(new JwtFilter(jwtAuthHelper, objectMapper));
         registrationBean.addUrlPatterns("/*");
 
         return registrationBean;
